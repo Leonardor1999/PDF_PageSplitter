@@ -20,7 +20,7 @@ cd PDF_PageSplitter
 
 ```bash
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate # venv\Scripts\activate on Windows
 ```
 
 ### 3. Install dependencies

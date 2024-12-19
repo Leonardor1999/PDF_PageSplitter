@@ -1,17 +1,40 @@
 import os
 import logging
 from pypdf import PdfReader, PdfWriter, PageObject
-
-log_file = "pypdf_warnings.log"
-logging.basicConfig(filename=log_file, level=logging.WARNING, filemode='w')
-
-pdfs_directory = os.path.dirname(os.path.abspath(__file__))
-output_directory = os.path.join(pdfs_directory, "output")
-
-os.makedirs(output_directory, exist_ok=True)
+import argparse
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Each page is split into two pages, one for the upper half and one for the lower half.\
+                                     The output is saved in the 'output' folder in the same directory as the input PDF files.\
+                                     Any warnings are saved to 'pypdf_warnings.log'.\
+                                     The script requires the 'pypdf' package to be installed.\
+                                     The script is compatible with Python 3.6 and later versions.\
+                                     For more information, visit: https://github.com/Leonardor1999/PDF_PageSplitter",
+                                     add_help=True,
+                                     epilog="(C) 2024 - Leonardo Russo")
+
+    verbosity_group = parser.add_mutually_exclusive_group()
+    verbosity_group.add_argument("-q", "--quiet", action="store_true",
+                                 help="suppress output messages")
+    verbosity_group.add_argument("-v", "--verbosity", action="count", default=0,
+                                 help="increase output verbosity")
+    
+    parser.add_argument("-i", "--input", type=str, help="directory containing PDF files to split")
+    parser.add_argument("-o", "--output", type=str, help="output directory for split PDF files")
+    parser.add_argument("-l", "--log", type=str, help="log file for warnings")
+
+    args = parser.parse_args()
+
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    pdfs_directory = args.input if args.input else current_directory
+    output_directory = args.output if args.output else os.path.join(current_directory, "output")
+
+    os.makedirs(output_directory, exist_ok=True)
+    
     pdf_files = (f for f in os.listdir(pdfs_directory) if f.endswith(".pdf"))
+
+    log_file = args.log
+    logging.basicConfig(filename=log_file, level=logging.WARNING, filemode='w')
 
     for pdf_file in pdf_files:
         input_path = os.path.join(pdfs_directory, pdf_file)
@@ -41,9 +64,14 @@ if __name__ == "__main__":
             with open(output_path, "wb") as output_file:
                 writer.write(output_file)
 
-            print(f"Processed file: {pdf_file} -> {output_path}")
+            if args.verbosity > 0:
+                print(f"Processed file: {pdf_file} -> {output_path}")
         except Exception as e:
-            logging.warning(f"Error processing {pdf_file}: {e}")
+            if args.log:
+                logging.warning(f"Error processing {pdf_file}: {e}")
 
-print("Processing completed for all PDF files in the folder. Split files are saved in the 'output' folder.")
-print(f"Any warnings have been saved to '{log_file}'.")
+    if not args.quiet:
+        print("Processing completed for all PDF files in the folder. Split files are saved in the 'output' folder.")
+    
+    if args.log:
+        print(f"Any warnings have been saved to '{log_file}'.")
