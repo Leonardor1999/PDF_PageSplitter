@@ -1,52 +1,119 @@
+# PDF Page Splitter
 
-# PDF Page Splitter Script
+This repository contains a Python script for splitting each page of a PDF into two pages: one for the upper half and one for the lower half.
 
-This Python script uses the `pypdf` library to split each page of a PDF document into two. This is particularly useful for working with scanned or double-sided PDFs that you want to separate into individual pages.
+## Features
 
-## Prerequisites
+- **Batch Processing**: Automatically process all PDF files in a specified directory.
+- **Customizable Directories**: Specify input and output directories for flexibility.
+- **Logging**: Log warnings and errors to a specified file.
+- **Verbosity Control**: Adjust the level of output verbosity for better control.
+- **Compatibility**: Works with Python 3.6 and later versions.
 
-Before running the script, ensure you have Python 3.6+ installed on your system. Additionally, you will need to install `pypdf`.
+## Requirements
 
-## Installation
+- Python 3.6 or higher
+- `pypdf` package
 
-### 1. Clone this repository
-
-```bash
-git clone https://github.com/Leonardor1999/PDF_PageSplitter.git
-cd PDF_PageSplitter
-```
-
-### 2. Create a virtual environment (optional but recommended)
-
-```bash
-python3 -m venv venv
-source venv/bin/activate # venv\Scripts\activate on Windows
-```
-
-### 3. Install dependencies
-
+Install the required package:
 ```bash
 pip install pypdf
 ```
 
 ## Usage
 
-### 1. Prepare your PDF file
-
-Place the PDF files you want to split in the same directory as the script.
-
-### 2. Run the script
-
-Once the setup is complete, you can run the script using the following command:
-
+Run the script using the command line:
 ```bash
-python3 split_pdf_pages_in_half.py
+python split_pdf_pages_in_half.py [options]
 ```
 
-### 3. Output
+### Options:
+- `-i`, `--input`: Directory containing PDF files to split. Defaults to the current directory.
+- `-o`, `--output`: Directory where split PDF files will be saved. Defaults to a folder named `output` in the current directory.
+- `-l`, `--log`: File to save warnings and errors. Defaults to no logging if not specified.
+- `-q`, `--quiet`: Suppress output messages.
+- `-v`, `--verbosity`: Increase output verbosity. Use multiple `-v` for higher verbosity levels.
 
-The script will create a new directory called `output/` where the split pages will be saved. Each page will be divided into two, and the resulting files will have the same name as the originals.
+### Example Command
+
+```bash
+python split_pdf_pages_in_half.py -i ./pdfs -o ./output -l ./warnings.log -v
+```
+
+This command will process all PDFs in the `./pdfs` directory, save the split PDFs to the `./output` directory, and log warnings to `./warnings.log` with verbosity enabled.
+
+## Making the Script Executable Globally
+
+To make the script executable from any directory, follow these steps:
+
+1. **Add a Shebang**: Ensure the script starts with the following line:
+   ```python
+   #!/usr/bin/env python3
+   ```
+
+2. **Make the Script Executable**: Run the following command:
+   ```bash
+   chmod +x split_pdf_pages_in_half.py
+   ```
+
+3. **Move the Script to a Directory in `PATH`**:
+   - Create a directory for your custom scripts if it doesn’t exist:
+     ```bash
+     mkdir -p ~/scripts
+     ```
+   - Move the script to this directory:
+     ```bash
+     mv split_pdf_pages_in_half.py ~/scripts/
+     ```
+
+4. **Update the `PATH` Environment Variable**:
+   - Open your shell configuration file (e.g., `~/.bashrc` or `~/.zshrc`) and add the following line:
+     ```bash
+     export PATH="$HOME/scripts:$PATH"
+     ```
+   - Apply the changes:
+     ```bash
+     source ~/.bashrc
+     ```
+
+Now, you can execute the script from any directory by typing:
+```bash
+split_pdf_pages_in_half.py [options]
+```
+
+## Creating an Alias for Easier Execution
+
+To simplify execution, you can create an alias for the script:
+
+1. **Add an Alias**:
+   - Open your shell configuration file (e.g., `~/.bashrc` or `~/.zshrc`) and add the following line:
+     ```bash
+     alias splitpdfs="~/scripts/split_pdf_pages_in_half.py"
+     ```
+
+2. **Apply the Changes**:
+   - Save the file and reload the shell configuration:
+     ```bash
+     source ~/.bashrc
+     ```
+
+3. **Use the Alias**:
+   - Now you can execute the script using the alias:
+     ```bash
+     splitpdfs [options]
+     ```
+
+## How It Works
+
+1. Reads PDF files from the input directory.
+2. Splits each page into two pages:
+   - Upper half
+   - Lower half
+3. Saves the resulting PDF to the output directory.
+4. Logs any warnings or errors encountered during processing.
 
 ## License
 
-This project is licensed under the GPLv3 License - see the [LICENSE](LICENSE) file for details.
+(C) 2024 Leonardo Russo. All rights reserved.
+
+For more information, visit the project repository: [GitHub - PDF Page Splitter](https://github.com/Leonardor1999/PDF_PageSplitter)

@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+
 import os
 import logging
 from pypdf import PdfReader, PdfWriter, PageObject
 import argparse
+from tqdm import tqdm
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Each page is split into two pages, one for the upper half and one for the lower half.\
@@ -25,53 +28,58 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    current_directory = os.path.dirname(os.path.abspath(__file__))
+    current_directory = os.getcwd()
     pdfs_directory = args.input if args.input else current_directory
     output_directory = args.output if args.output else os.path.join(current_directory, "output")
 
     os.makedirs(output_directory, exist_ok=True)
     
-    pdf_files = (f for f in os.listdir(pdfs_directory) if f.endswith(".pdf"))
+    pdf_files = [f for f in os.listdir(pdfs_directory) if f.endswith(".pdf")]
 
-    log_file = args.log
-    logging.basicConfig(filename=log_file, level=logging.WARNING, filemode='w')
+    if args.log:
+        log_file = args.log
+        logging.basicConfig(filename=log_file, level=logging.WARNING, filemode='w')
+    else:
+        logging.basicConfig(handlers=[logging.NullHandler()])
 
-    for pdf_file in pdf_files:
-        input_path = os.path.join(pdfs_directory, pdf_file)
-        output_path = os.path.join(output_directory, pdf_file)
+    with tqdm(total=len(pdf_files), desc="Processing PDF files", unit="file", dynamic_ncols=True, disable=args.quiet) as pbar:
+        for pdf_file in pdf_files:
+            input_path = os.path.join(pdfs_directory, pdf_file)
+            output_path = os.path.join(output_directory, pdf_file)
 
-        try:
-            reader = PdfReader(input_path)
-            writer = PdfWriter()
+            try:
+                reader = PdfReader(input_path)
+                writer = PdfWriter()
 
-            for page in reader.pages:
-                media_box = page.mediabox
+                for page in reader.pages:
+                    media_box = page.mediabox
 
-                upper_half = PageObject.create_blank_page(width=media_box.width, height=(media_box.height / 2))
-                upper_half.merge_page(page)
-                upper_half.mediabox.upper_right = (media_box.right, media_box.top)
-                upper_half.mediabox.lower_left = (media_box.left, media_box.top - (media_box.height / 2))
+                    upper_half = PageObject.create_blank_page(width=media_box.width, height=(media_box.height / 2))
+                    upper_half.merge_page(page)
+                    upper_half.mediabox.upper_right = (media_box.right, media_box.top)
+                    upper_half.mediabox.lower_left = (media_box.left, media_box.top - (media_box.height / 2))
 
-                lower_half = PageObject.create_blank_page(width=media_box.width, height=(media_box.height / 2))
-                lower_half.merge_page(page)
-                lower_half.mediabox.upper_right = (media_box.right, media_box.top - (media_box.height / 2))
-                lower_half.mediabox.lower_left = (media_box.left, media_box.bottom)
+                    lower_half = PageObject.create_blank_page(width=media_box.width, height=(media_box.height / 2))
+                    lower_half.merge_page(page)
+                    lower_half.mediabox.upper_right = (media_box.right, media_box.top - (media_box.height / 2))
+                    lower_half.mediabox.lower_left = (media_box.left, media_box.bottom)
 
 
-                writer.add_page(upper_half)
-                writer.add_page(lower_half)
+                    writer.add_page(upper_half)
+                    writer.add_page(lower_half)
 
-            with open(output_path, "wb") as output_file:
-                writer.write(output_file)
+                with open(output_path, "wb") as output_file:
+                    writer.write(output_file)
 
-            if args.verbosity > 0:
-                print(f"Processed file: {pdf_file} -> {output_path}")
-        except Exception as e:
-            if args.log:
-                logging.warning(f"Error processing {pdf_file}: {e}")
+                if args.verbosity > 0:
+                    print(f"\nProcessed file: {pdf_file} -> {output_path}")
+                pbar.update(1)
+            except Exception as e:
+                if args.log:
+                    logging.warning(f"Error processing {pdf_file}: {e}")
 
     if not args.quiet:
-        print("Processing completed for all PDF files in the folder. Split files are saved in the 'output' folder.")
+        print("Processing completed for all PDF files in the folder. Split files are saved in the 'output' directory.")
     
     if args.log:
         print(f"Any warnings have been saved to '{log_file}'.")
