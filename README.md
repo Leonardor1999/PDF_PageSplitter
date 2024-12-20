@@ -14,10 +14,11 @@ This repository contains a Python script for splitting each page of a PDF into t
 
 - Python 3.6 or higher
 - `pypdf` package
+- `tqdm` package
 
-Install the required package:
+Install the required packages:
 ```bash
-pip install pypdf
+pip install pypdf tqdm
 ```
 
 ## Usage
