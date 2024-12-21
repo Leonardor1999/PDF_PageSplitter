@@ -43,16 +43,30 @@ python split_pdf_pages_in_half.py -i ./pdfs -o ./output -l ./warnings.log -v
 
 This command will process all PDFs in the `./pdfs` directory, save the split PDFs to the `./output` directory, and log warnings to `./warnings.log` with verbosity enabled.
 
-## Making the Script Executable Globally
+## How the Script Works
 
-To make the script executable from any directory, follow these steps:
+1. **Input Reading**: The script reads all files from the specified input directory (or the current directory if none is specified). Only files with the `.pdf` extension are processed; other files are ignored.
+2. **Page Splitting**:
+   - For each PDF, it iterates through its pages.
+   - Each page is split into two separate pages:
+     - The **upper half** of the original page.
+     - The **lower half** of the original page.
+3. **Output Writing**: The split pages are saved into new PDF files in the specified output directory.
+4. **Logging**: Any warnings or errors encountered during the process are logged to the specified file if provided.
+5. **Progress Tracking**: The script uses `tqdm` to display a progress bar during the processing.
+
+## Additional Configuration
+
+### Global Execution
+
+To make the script executable globally:
 
 1. **Add a Shebang**: Ensure the script starts with the following line:
    ```python
    #!/usr/bin/env python3
    ```
 
-2. **Make the Script Executable**: Run the following command:
+2. **Make the Script Executable**:
    ```bash
    chmod +x split_pdf_pages_in_half.py
    ```
@@ -82,9 +96,9 @@ Now, you can execute the script from any directory by typing:
 split_pdf_pages_in_half.py [options]
 ```
 
-## Creating an Alias for Easier Execution
+### Creating an Alias
 
-To simplify execution, you can create an alias for the script:
+For easier execution, you can create an alias:
 
 1. **Add an Alias**:
    - Open your shell configuration file (e.g., `~/.bashrc` or `~/.zshrc`) and add the following line:
@@ -99,22 +113,18 @@ To simplify execution, you can create an alias for the script:
      ```
 
 3. **Use the Alias**:
-   - Now you can execute the script using the alias:
+   - Execute the script using the alias:
      ```bash
      splitpdfs [options]
      ```
 
-## How It Works
+## Notes and Limitations
 
-1. Reads PDF files from the input directory.
-2. Splits each page into two pages:
-   - Upper half
-   - Lower half
-3. Saves the resulting PDF to the output directory.
-4. Logs any warnings or errors encountered during processing.
+- **File Types**: Only files with the `.pdf` extension are processed. Other files in the input directory are ignored without causing errors.
+- **Page Orientation**: The splitting assumes standard portrait orientation for pages. Results may vary for landscape-oriented pages.
 
 ## License
 
 (C) 2024 Leonardo Russo. All rights reserved.
 
-For more information, visit the project repository: [GitHub - PDF Page Splitter](https://github.com/Leonardor1999/PDF_PageSplitter)
+For more information, visit the project repository: [GitHub - PDF Page Splitter](https://github.com/Leonardor1999/PDF_PageSplitter).
