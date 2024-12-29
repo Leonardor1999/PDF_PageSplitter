@@ -127,4 +127,4 @@ For easier execution, you can create an alias:
 
 (C) 2024 Leonardo Russo. All rights reserved.
 
-For more information, visit the project repository: [GitHub - PDF Page Splitter](https://github.com/Leonardor1999/PDF_PageSplitter).
+For more information, visit the project repository: [GitHub - pdf-page-splitter](https://github.com/leonardor1999/pdf-page-splitter).
